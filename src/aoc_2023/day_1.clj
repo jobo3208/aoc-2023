@@ -1,6 +1,7 @@
 (ns aoc-2023.day-1
   (:require [clojure.java.io :as io]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [clojure.test :as t]))
 
 (def sample-input "1abc2
 pqr3stu8vwx
@@ -42,10 +43,17 @@ zoneight234
   ([s]
    (words-to-digits s false))
   ([s reverse?]
-   (let [word->digit (if reverse? (update-keys word->digit string/reverse) word->digit)
+   (let [s (if reverse? (string/reverse s) s)
+         word->digit (if reverse? (update-keys word->digit string/reverse) word->digit)
          words (keys word->digit)
-         pattern (re-pattern (string/join "|" words))]
-     (string/replace s pattern word->digit))))
+         pattern (re-pattern (string/join "|" words))
+         result (string/replace s pattern word->digit)]
+     (if reverse? (string/reverse result) result))))
+
+(t/deftest test-words-to-digits
+  (t/is (= (words-to-digits "one2three") "123"))
+  (t/is (= (words-to-digits "oneight") "1ight"))
+  (t/is (= (words-to-digits "oneight" true) "on8")))
 
 (defn run-part-1 [input]
   (->> (string/split input #"\n")
@@ -56,7 +64,7 @@ zoneight234
 
 (defn run-part-2 [input]
   (let [first-digit (comp first extract-digits words-to-digits)
-        last-digit (comp first extract-digits #(words-to-digits % true) string/reverse)]
+        last-digit (comp last extract-digits #(words-to-digits % true))]
     (->> (string/split input #"\n")
          (map (juxt first-digit last-digit))
          (map (partial apply str))
