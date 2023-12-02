@@ -32,7 +32,7 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green")
     {:id id :showings showings}))
 
 (defn showing-possible? [bag showing]
-  (not (some #(apply < %) (vals (merge-with vector bag showing)))))
+  (every? true? (vals (merge-with >= bag showing))))
 
 (t/deftest test-showing-possible?
   (t/is (true? (showing-possible? {:red 1 :green 1 :blue 1} {:red 0 :green 0 :blue 0})))
