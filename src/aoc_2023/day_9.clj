@@ -11,12 +11,10 @@
        (partition 2 1)
        (mapv (fn [[a b]] (- b a)))))
 
-(defn take-until
-  "take-while, plus the next item."
-  [pred coll]
+(defn take-until [pred coll]
   (let [idx (->> coll
                  (map-indexed vector)
-                 (drop-while (comp pred second))
+                 (drop-while (comp (complement pred) second))
                  ffirst)]
     (take (inc idx) coll)))
 
@@ -26,7 +24,7 @@
 (defn extrapolate [step history]
   (->> history
        (iterate diffs)
-       (take-until #(not (every? zero? %)))
+       (take-until (partial every? zero?))
        (reverse)
        (reduce step)))
 
