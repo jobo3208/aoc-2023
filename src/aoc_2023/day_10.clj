@@ -1,6 +1,5 @@
 (ns aoc-2023.day-10
   (:require [clojure.java.io :as io]
-            [clojure.set :as se]
             [clojure.string :as string]
             [clojure.test :as t]))
 
@@ -68,7 +67,7 @@ LJ...")
         distances
         (let [connections (->> (neighbors p)
                                (filter (partial connecting? grid p)))
-              new-ps (se/difference (set connections) (set (keys distances)))
+              new-ps (remove distances connections)
               distances' (merge distances (zipmap new-ps (repeat (inc (distances p)))))]
           (recur (into (vec ps) new-ps) distances'))))))
 
